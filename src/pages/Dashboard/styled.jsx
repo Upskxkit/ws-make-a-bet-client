@@ -11,13 +11,9 @@ export const MainWrapper = styled.div`
   margin-top: 140px;
 `;
 
-interface IPaperStyled extends PaperProps {
-  isSticky?: boolean;
-}
-
-export const PaperStyled = styled(({ isSticky, ...rest }: IPaperStyled) => (
+export const PaperStyled = styled(({ isSticky, ...rest }) => (
   <Paper {...rest} />
-))<IPaperStyled>`
+))`
   flex-grow: 1;
   width: 100%;
   z-index: 10;

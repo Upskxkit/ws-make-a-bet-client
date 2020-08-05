@@ -1,6 +1,6 @@
 import React from 'react';
 import { render } from '@testing-library/react';
-import App from 'ws-male-a-bet-client/src/App';
+import App from 'ws-make-a-bet-client/src/App';
 
 test('renders learn react link', () => {
   const { getByText } = render(<App />);

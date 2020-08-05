@@ -12,7 +12,7 @@ import { NavBarWrapper } from "./styled";
 
 export function NavBar() {
   const { user, clear } = useUser();
-  const { socket } = useSocket();
+  const socket = useSocket();
 
   useEffect(() => {
     socket.on(Channels.User, ({ method }) => {

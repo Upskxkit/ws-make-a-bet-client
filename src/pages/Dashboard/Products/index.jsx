@@ -10,16 +10,6 @@ import Button from "@material-ui/core/Button";
 import { Channels, ProductRPC } from "../../../constants";
 import { useSocket } from "../../../hooks/useSocket";
 
-/*{
-      const { method, args } = data;
-
-      if ("error" in args) {
-        showSnackbar(args.error, SnackbarType.Error);
-      } else {
-        showSnackbar("Bid was made", SnackbarType.Success);
-      }
-    }*/
-
 const Products = ({ list }) => {
   const [config, setConfig] = useState({
     rowHeight: 50,
@@ -82,7 +72,7 @@ const Products = ({ list }) => {
         <DialogTitle id="form-dialog-title">Set your Bet</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            Last Bet: {product.currentBid || 0}
+            Last Bet: {(product && product.currentBid) || 0}
           </DialogContentText>
           <TextField
             autoFocus

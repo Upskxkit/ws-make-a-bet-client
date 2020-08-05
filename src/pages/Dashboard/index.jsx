@@ -10,8 +10,8 @@ import Products from "./Products";
 import { useUser } from "../../hooks/useUser";
 import OwnProducts from "./OwnProducts";
 
-const TabsEnum = {
-  PRODUCTS: 1,
+const TabsNum = {
+  PRODUCTS: 0,
   MY_PRODUCTS: 1,
 };
 
@@ -22,7 +22,7 @@ export const Dashboard = () => {
   const { user } = useUser();
   const isMobile = useMediaQuery(`(max-width: ${BREAKPOINT})`);
   const [isSticky, setIsSticky] = useState(isMobile);
-  const [value, setValue] = useState(TabsEnum.PRODUCTS);
+  const [value, setValue] = useState(TabsNum.PRODUCTS);
   const [state, dispatch] = useReducer(reducer, {
     products: [],
     pending: true,
@@ -31,9 +31,12 @@ export const Dashboard = () => {
   useEffect(() => {
     socket.on(Channels.Products, dispatch);
 
+    socket.emit(Channels.Products, { method: ProductRPC.List });
+
     return () => {
-      socket.removeListener(Channels.Products, dispatch);
+      socket.removeListner(Channels.Products, dispatch);
     };
+    //TODO useRef for listner
   }, []);
 
   const handleScroll = () => {
@@ -71,11 +74,11 @@ export const Dashboard = () => {
           {user && <Tab icon={<LocalMallIcon />} label="МОИ ТОВАРЫ" />}
         </Tabs>
       </PaperStyled>
-      {value === TabsEnum.PRODUCTS && (
+      {value === TabsNum.PRODUCTS && (
         <>{state.pending ? <>pending</> : <Products list={state.products} />}</>
       )}
 
-      {value === TabsEnum.MYPRODUCTS && (
+      {value === TabsNum.MY_PRODUCTS && (
         <>
           {state.pending ? <>pending</> : <OwnProducts list={state.products} />}
         </>
