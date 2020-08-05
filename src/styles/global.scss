@@ -1,0 +1,52 @@
+html,
+body {
+  max-width: 1224px;
+  margin: 0 auto;
+}
+
+.root {
+  height: 100%;
+}
+
+[type="button"]:not(:disabled),
+[type="reset"]:not(:disabled),
+[type="submit"]:not(:disabled),
+button:not(:disabled) {
+  cursor: pointer;
+  outline: none;
+}
+
+.invisible {
+  display: none;
+}
+
+.busy-container {
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  top: 0px;
+  left: 0px;
+  z-index: 9999;
+  background-color: #e6e6e6;
+  opacity: 0.8;
+
+  .busy {
+    position: absolute;
+    left: 50%;
+    top: 44%;
+    margin-left: -18px;
+  }
+}
+
+.link-button {
+  text-decoration: none;
+  color: inherit;
+}
+
+.m-b-10 {
+  margin-bottom: 10px;
+}
+
+.f-g-1 {
+  flex-grow: 1;
+}
