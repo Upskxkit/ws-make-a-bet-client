@@ -119,7 +119,7 @@ function reducer(state, action) {
       let products = state.products;
       const newProduct = action.args;
 
-      toast.success(`Product ${newProduct.title} created.`);
+      toast.info(`Product ${newProduct.title} created.`);
 
       products = [
         ...products,
@@ -140,7 +140,7 @@ function reducer(state, action) {
           return item;
         }
 
-        toast.success(`Product ${updatedProduct.title} updated.`);
+        toast.info(`Product ${updatedProduct.title} updated.`);
 
         return {
           ...updatedProduct,
