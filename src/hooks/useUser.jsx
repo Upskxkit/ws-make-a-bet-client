@@ -11,15 +11,9 @@ export function UserProvider(props) {
   const { getObject, setObject, remove } = useLocalStorage();
   const [state, setState] = useState(getObject("user") || null);
 
-  function setUser(user) {
-    setObject("user", user);
-    setState(user);
-  }
+  function setUser(user) {}
 
-  function clear() {
-    remove("user");
-    setState(null);
-  }
+  function clear() {}
 
   return (
     <UserContext.Provider value={{ user: state, setUser, clear }} {...props} />
