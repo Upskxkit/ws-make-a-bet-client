@@ -11,6 +11,7 @@ import { SignupContainer } from "./styled";
 import { useSocket } from "../../hooks/useSocket";
 import { Channels, UserRPC } from "../../constants";
 import { useUser } from "../../hooks/useUser";
+import {toast} from "react-toastify";
 
 const useStyles = makeStyles((theme) => ({
   card: {
@@ -53,7 +54,6 @@ function Login() {
 
   useEffect(() => {
     socket.on(Channels.User, (data) => {
-      //TODO move to helper for unsubscribe
       const { method, args } = data;
 
       if (method !== UserRPC.Login) {
@@ -61,7 +61,7 @@ function Login() {
       }
 
       if ("error" in args) {
-        //TODO add tostofy
+        toast.error(args.error);
       } else {
         setUser(args);
         history.push(`/`);

@@ -24,6 +24,11 @@ export const Flex = styled.div`
     css`
       flex-wrap: wrap;
     `}
+    ${({ justifyStart }) =>
+      justifyStart &&
+      css`
+        justify-content: flex-start;
+      `}
   ${({ justifyBetween }) =>
     justifyBetween &&
     css`

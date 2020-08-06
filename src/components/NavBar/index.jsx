@@ -37,10 +37,10 @@ export function NavBar() {
           backgroundColor: "red",
           alignSelf: "center",
           margin: "8px 16px",
-          padding: "4px"
+          padding: "4px",
         }}
       >
-        <InnovecsIcon/>
+        <InnovecsIcon />
       </RouterLink>
       <div>
         {user ? (
@@ -66,18 +66,24 @@ export function NavBar() {
             aria-label="text primary button group"
             style={{
               margin: "8px 16px",
-              padding: "4px"
+              padding: "4px",
             }}
           >
-            <Button>
-              <RouterLink className="link-button" to={"/signin"}>
-                Sign in
-              </RouterLink>
+            <Button
+              color="primary"
+              variant="outlined"
+              component={RouterLink}
+              to={"/signin"}
+            >
+              Sign In
             </Button>
-            <Button>
-              <RouterLink className="link-button" to={"/signup"}>
-                Sign up
-              </RouterLink>
+            <Button
+              color="primary"
+              to={"/signup"}
+              variant="outlined"
+              component={RouterLink}
+            >
+              Sign up
             </Button>
           </ButtonGroup>
         )}

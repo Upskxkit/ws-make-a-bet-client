@@ -1,16 +1,19 @@
-import React, { memo, useEffect, useState } from "react";
-import ProductsList from "../../../components/List";
 import { Dialog } from "@material-ui/core";
-import DialogTitle from "@material-ui/core/DialogTitle";
+import Button from "@material-ui/core/Button";
+import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogContentText from "@material-ui/core/DialogContentText";
+import DialogTitle from "@material-ui/core/DialogTitle";
 import TextField from "@material-ui/core/TextField";
-import DialogActions from "@material-ui/core/DialogActions";
-import Button from "@material-ui/core/Button";
+import React, { memo, useEffect, useState } from "react";
+import ProductsList from "../../../components/List";
 import { Channels, ProductRPC } from "../../../constants";
 import { useSocket } from "../../../hooks/useSocket";
+import { useUser } from "../../../hooks/useUser";
 
 const Products = ({ list }) => {
+  const { user } = useUser();
+  const socket = useSocket();
   const [config, setConfig] = useState({
     rowHeight: 50,
     rowCount: list.length,
@@ -21,11 +24,6 @@ const Products = ({ list }) => {
   const [open, setOpen] = React.useState(false);
   const [product, setProduct] = useState();
   const [amount, setAmount] = useState(0);
-  const socket = useSocket();
-
-  useEffect(() => {
-    socket.on(Channels.Products);
-  }, []);
 
   useEffect(() => {
     setConfig((prev) => ({
@@ -62,8 +60,12 @@ const Products = ({ list }) => {
 
   return (
     <>
-      <ProductsList isBet onBet={startABet} list={list} config={config} />
-
+      <ProductsList
+        isBet={!!user}
+        onBet={startABet}
+        list={list}
+        config={config}
+      />
       <Dialog
         open={open}
         onClose={handleClose}
@@ -79,8 +81,8 @@ const Products = ({ list }) => {
             type="number"
             margin="dense"
             onChange={(event) => {
-              console.log(event);
-              setAmount(+event.target.value);
+              const bit = +event.target.value;
+              setAmount(bit);
             }}
             value={amount}
             label="type amount here"

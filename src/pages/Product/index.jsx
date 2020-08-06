@@ -1,25 +1,27 @@
-import React, { useEffect, useRef } from "react";
-import { Channels, ProductRPC } from "../../constants";
-import { useSocket } from "../../hooks/useSocket";
-import { Flex } from "../../styles/styled";
-import { ProductToolbar, ProductWrapper } from "./styled";
-import { Controller, useForm } from "react-hook-form";
+import DateFnsUtils from "@date-io/date-fns";
+import { yupResolver } from "@hookform/resolvers";
 import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
 import Typography from "@material-ui/core/Typography";
-import format from "date-fns/format";
-import DateFnsUtils from "@date-io/date-fns";
 import {
   KeyboardDatePicker,
   MuiPickersUtilsProvider,
 } from "@material-ui/pickers";
-import { yupResolver } from "@hookform/resolvers";
-import { schema } from "./form.schema";
+import format from "date-fns/format";
+import React, { useEffect, useRef, useCallback } from "react";
+import { Controller, useForm } from "react-hook-form";
 import { useHistory } from "react-router-dom";
+import { toast } from "react-toastify";
+import { Channels, ProductRPC } from "../../constants";
+import { useSocket } from "../../hooks/useSocket";
+import { Flex } from "../../styles/styled";
+import { schema } from "./form.schema";
+import { ProductToolbar, ProductWrapper } from "./styled";
 
 export function Product() {
-  const date = useRef(format(new Date(), "dd/MM/yyyy"));
+  const socket = useSocket();
   const history = useHistory();
+  const date = useRef(format(new Date(), "dd/MM/yyyy"));
   const {
     register,
     handleSubmit,
@@ -40,11 +42,10 @@ export function Product() {
     resolver: yupResolver(schema),
   });
   const { bidStart, bidEnd } = watch();
-  const socket = useSocket();
 
-  useEffect(() => {
-    //TODO create REF for subscriber;
-    socket.on(Channels.Products, (data) => {
+
+  const socketListener = useCallback(
+    (data) => {
       const { method, args } = data;
 
       if (method !== ProductRPC.Create) {
@@ -52,11 +53,21 @@ export function Product() {
       }
 
       if ("error" in args) {
-        //TODO tostify
+        toast.error(args.error);
       } else {
+        toast.success(`product "${args.title}" created.`);
         history.push("/");
       }
-    });
+    },
+    [socket]
+  );
+
+  useEffect(() => {
+    socket.on(Channels.Products, socketListener);
+
+    return () => {
+      socket.off(Channels.Products, socketListener);
+    };
   }, []);
 
   useEffect(() => {

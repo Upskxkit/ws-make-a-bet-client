@@ -9,7 +9,7 @@ import { useSocket } from "../../hooks/useSocket";
 import Products from "./Products";
 import { useUser } from "../../hooks/useUser";
 import OwnProducts from "./OwnProducts";
-
+import { toast } from "react-toastify";
 const TabsNum = {
   PRODUCTS: 0,
   MY_PRODUCTS: 1,
@@ -29,14 +29,26 @@ export const Dashboard = () => {
   });
 
   useEffect(() => {
+    if (!user) {
+      setValue(TabsNum.PRODUCTS);
+    }
+  }, [user]);
+
+  useEffect(() => {
     socket.on(Channels.Products, dispatch);
 
     socket.emit(Channels.Products, { method: ProductRPC.List });
 
     return () => {
-      socket.removeListner(Channels.Products, dispatch);
+      socket.off(Channels.Products, dispatch);
     };
-    //TODO useRef for listner
+  }, []);
+
+  useEffect(() => {
+    window.addEventListener("scroll", handleScroll);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
   }, []);
 
   const handleScroll = () => {
@@ -52,13 +64,6 @@ export const Dashboard = () => {
     window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
   };
 
-  useEffect(() => {
-    window.addEventListener("scroll", handleScroll);
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
-  }, []);
-
   return (
     <MainWrapper>
       <PaperStyled square isSticky={isSticky} style={{ maxWidth: BREAKPOINT }}>
@@ -70,8 +75,8 @@ export const Dashboard = () => {
           textColor="primary"
           centered
         >
-          <Tab icon={<PersonIcon />} label="ТОВАРЫ" />
-          {user && <Tab icon={<LocalMallIcon />} label="МОИ ТОВАРЫ" />}
+          <Tab icon={<PersonIcon />} label="Products" />
+          {user && <Tab icon={<LocalMallIcon />} label="My Products" />}
         </Tabs>
       </PaperStyled>
       {value === TabsNum.PRODUCTS && (
@@ -88,6 +93,11 @@ export const Dashboard = () => {
 };
 
 function reducer(state, action) {
+  if (action.args.error) {
+    toast.error(action.args.error);
+    return state;
+  }
+
   switch (action.method) {
     case ProductRPC.List: {
       let products = [];
@@ -107,13 +117,9 @@ function reducer(state, action) {
 
     case ProductRPC.Create: {
       let products = state.products;
-
-      if ("error" in action.args) {
-        console.error(action.args);
-        return state;
-      }
-
       const newProduct = action.args;
+
+      toast.success(`Product ${newProduct.title} created.`);
 
       products = [
         ...products,
@@ -127,18 +133,14 @@ function reducer(state, action) {
 
     case ProductRPC.Update: {
       let products = state.products;
-
-      if ("error" in action.args) {
-        console.error(action.args);
-        return state;
-      }
-
       const updatedProduct = action.args;
 
       products = products.map((item) => {
         if (item.id !== updatedProduct.id) {
           return item;
         }
+
+        toast.success(`Product ${updatedProduct.title} updated.`);
 
         return {
           ...updatedProduct,

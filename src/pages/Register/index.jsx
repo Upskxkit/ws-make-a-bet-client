@@ -1,23 +1,23 @@
-import React, { ChangeEvent, useEffect, useState } from "react";
+import Button from "@material-ui/core/Button";
 import Card from "@material-ui/core/Card";
 import CardActions from "@material-ui/core/CardActions";
 import CardContent from "@material-ui/core/CardContent";
-import Button from "@material-ui/core/Button";
-import TextField from "@material-ui/core/TextField";
-import Typography from "@material-ui/core/Typography";
-import { makeStyles } from "@material-ui/core/styles";
-
 import Dialog from "@material-ui/core/Dialog";
 import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogTitle from "@material-ui/core/DialogTitle";
-import { Link, useHistory } from "react-router-dom";
+import { makeStyles } from "@material-ui/core/styles";
+import TextField from "@material-ui/core/TextField";
+import Typography from "@material-ui/core/Typography";
+import ErrorOutlineIcon from "@material-ui/icons/ErrorOutline";
+import React, { useEffect, useState, useCallback } from "react";
+import { useHistory, Link as RouterLink } from "react-router-dom";
 import { Channels, UserRPC } from "../../constants";
 import { useSocket } from "../../hooks/useSocket";
 import { useUser } from "../../hooks/useUser";
 import { SignupContainer } from "./styled";
-import ErrorOutlineIcon from "@material-ui/icons/ErrorOutline";
+import { toast } from "react-toastify";
 
 const useStyles = makeStyles((theme) => ({
   card: {
@@ -51,18 +51,10 @@ export function Register() {
     open: false,
     error: "",
   });
-
   const { user } = useUser();
-
   const socket = useSocket();
-
-  useEffect(() => {
-    if (user) {
-      history.push(`/`);
-      return;
-    }
-
-    socket.on(Channels.User, (data) => {
+  const socketListener = useCallback(
+    (data) => {
       const { method, args } = data;
 
       if (method !== UserRPC.Register) {
@@ -70,12 +62,34 @@ export function Register() {
       }
 
       if ("error" in args) {
+        toast.error(args.error);
         setValues({ ...values, error: args.error });
       } else {
         setValues({ ...values, error: "", open: true });
       }
-    });
+    },
+    [socket]
+  );
+
+  useEffect(() => {
+    if (user) {
+      history.push(`/`);
+      return;
+    }
+
+    socket.on(Channels.User, socketListener);
+
+    return () => {
+      socket.off(Channels.User, socketListener);
+    };
   }, []);
+
+  const handleChange = (name) => (event) => {
+    event.persist();
+    setValues((prev) => {
+      return { ...prev, [name]: event.target.value };
+    });
+  };
 
   const clickSubmit = () => {
     const user = { username: values.username };
@@ -123,19 +137,16 @@ export function Register() {
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button color="primary" variant="contained">
-            <Link to="/signin" className="link-button">
-              Sign In
-            </Link>
+          <Button
+            color="primary"
+            variant="outlined"
+            component={RouterLink}
+            to={"/signin"}
+          >
+            Sign In
           </Button>
         </DialogActions>
       </Dialog>
     </SignupContainer>
   );
-}
-
-function handleChange(name, setValues) {
-  return (event) => {
-    setValues((values) => ({ ...values, [name]: event.target.value }));
-  };
 }
