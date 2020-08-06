@@ -11,7 +11,7 @@ import { SignupContainer } from "./styled";
 import { useSocket } from "../../hooks/useSocket";
 import { Channels, UserRPC } from "../../constants";
 import { useUser } from "../../hooks/useUser";
-import {toast} from "react-toastify";
+import { toast } from "react-toastify";
 
 const useStyles = makeStyles((theme) => ({
   card: {
@@ -39,34 +39,15 @@ const useStyles = makeStyles((theme) => ({
 
 function Login() {
   const history = useHistory();
+  const { user, setUser } = useUser();
+  const socket = useSocket();
   const classes = useStyles();
   const [values, setValues] = useState({ username: "" });
-
-  const { user, setUser } = useUser();
 
   useEffect(() => {
     if (user) {
       history.push(`/`);
     }
-  }, []);
-
-  const socket = useSocket();
-
-  useEffect(() => {
-    socket.on(Channels.User, (data) => {
-      const { method, args } = data;
-
-      if (method !== UserRPC.Login) {
-        return;
-      }
-
-      if ("error" in args) {
-        toast.error(args.error);
-      } else {
-        setUser(args);
-        history.push(`/`);
-      }
-    });
   }, []);
 
   const handleChange = (name) => (event) => {
@@ -75,8 +56,6 @@ function Login() {
 
   const clickSubmit = () => {
     const user = { username: values.username };
-
-    socket.emit(Channels.User, { method: UserRPC.Login, args: user });
   };
 
   return (
@@ -111,3 +90,18 @@ function Login() {
 }
 
 export { Login };
+
+//(data) => {
+//       const { method, args } = data;
+//
+//       if (method !== UserRPC.Login) {
+//         return;
+//       }
+//
+//       if ("error" in args) {
+//         toast.error(args.error);
+//       } else {
+//         setUser(args);
+//         history.push(`/`);
+//       }
+//     }

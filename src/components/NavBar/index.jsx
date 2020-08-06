@@ -1,7 +1,7 @@
 import { Button } from "@material-ui/core";
 import ButtonGroup from "@material-ui/core/ButtonGroup";
 import Typography from "@material-ui/core/Typography";
-import React, { useEffect } from "react";
+import React, { useEffect, useCallback } from "react";
 import { Link as RouterLink } from "react-router-dom";
 import { UserRPC, Channels } from "../../constants";
 import { useSocket } from "../../hooks/useSocket";
@@ -13,15 +13,21 @@ import { NavBarWrapper } from "./styled";
 export function NavBar() {
   const { user, clear } = useUser();
   const socket = useSocket();
-
-  useEffect(() => {
-    socket.on(Channels.User, ({ method }) => {
+  const socketListener = useCallback(
+    ({ method }) => {
       if (method === UserRPC.Logout) {
         clear();
       }
-    });
+    },
+    [socket]
+  );
 
-    //TODO unsubscribe
+  useEffect(() => {
+    socket.on(Channels.User, socketListener);
+
+    return () => {
+      socket.off(Channels.User, socketListener);
+    };
   });
 
   function logout() {

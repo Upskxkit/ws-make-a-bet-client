@@ -66,40 +66,41 @@ const Products = ({ list }) => {
         list={list}
         config={config}
       />
-      <Dialog
-        open={open}
-        onClose={handleClose}
-        aria-labelledby="form-dialog-title"
-      >
-        <DialogTitle id="form-dialog-title">Set your Bet</DialogTitle>
-        <DialogContent>
-          <DialogContentText>
-            Last Bet: {(product && product.currentBid) || 0}
-          </DialogContentText>
-          <TextField
-            autoFocus
-            type="number"
-            margin="dense"
-            onChange={(event) => {
-              const bit = +event.target.value;
-              setAmount(bit);
-            }}
-            value={amount}
-            label="type amount here"
-            fullWidth
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button variant="outlined" onClick={handleClose}>
-            Cancel
-          </Button>
-          <Button variant="outlined" onClick={makeABet} color="primary">
-            Make a Bet
-          </Button>
-        </DialogActions>
-      </Dialog>
     </>
   );
 };
 
 export default memo(Products);
+
+//<Dialog
+//         open={open}
+//         onClose={handleClose}
+//         aria-labelledby="form-dialog-title"
+//       >
+//         <DialogTitle id="form-dialog-title">Set your Bet</DialogTitle>
+//         <DialogContent>
+//           <DialogContentText>
+//             Last Bet: {(product && product.currentBid) || 0}
+//           </DialogContentText>
+//           <TextField
+//             autoFocus
+//             type="number"
+//             margin="dense"
+//             onChange={(event) => {
+//               const bit = +event.target.value;
+//               setAmount(bit);
+//             }}
+//             value={amount}
+//             label="type amount here"
+//             fullWidth
+//           />
+//         </DialogContent>
+//         <DialogActions>
+//           <Button variant="outlined" onClick={handleClose}>
+//             Cancel
+//           </Button>
+//           <Button variant="outlined" onClick={makeABet} color="primary">
+//             Make a Bet
+//           </Button>
+//         </DialogActions>
+//       </Dialog>

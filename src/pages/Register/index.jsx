@@ -53,36 +53,6 @@ export function Register() {
   });
   const { user } = useUser();
   const socket = useSocket();
-  const socketListener = useCallback(
-    (data) => {
-      const { method, args } = data;
-
-      if (method !== UserRPC.Register) {
-        return;
-      }
-
-      if ("error" in args) {
-        toast.error(args.error);
-        setValues({ ...values, error: args.error });
-      } else {
-        setValues({ ...values, error: "", open: true });
-      }
-    },
-    [socket]
-  );
-
-  useEffect(() => {
-    if (user) {
-      history.push(`/`);
-      return;
-    }
-
-    socket.on(Channels.User, socketListener);
-
-    return () => {
-      socket.off(Channels.User, socketListener);
-    };
-  }, []);
 
   const handleChange = (name) => (event) => {
     event.persist();
@@ -93,8 +63,6 @@ export function Register() {
 
   const clickSubmit = () => {
     const user = { username: values.username };
-
-    socket.emit(Channels.User, { method: UserRPC.Register, args: user });
   };
   return (
     <SignupContainer>
@@ -129,24 +97,42 @@ export function Register() {
           </Button>
         </CardActions>
       </Card>
-      <Dialog open={values.open} disableBackdropClick={true}>
-        <DialogTitle>New Account</DialogTitle>
-        <DialogContent>
-          <DialogContentText>
-            New account successfully created.
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button
-            color="primary"
-            variant="outlined"
-            component={RouterLink}
-            to={"/signin"}
-          >
-            Sign In
-          </Button>
-        </DialogActions>
-      </Dialog>
+
     </SignupContainer>
   );
 }
+
+//(data) => {
+//       const { method, args } = data;
+//
+//       if (method !== UserRPC.Register) {
+//         return;
+//       }
+//
+//       if ("error" in args) {
+//         toast.error(args.error);
+//         setValues({ ...values, error: args.error });
+//       } else {
+//         setValues({ ...values, error: "", open: true });
+//       }
+//     },
+
+
+//<Dialog open={values.open} disableBackdropClick={true}>
+//         <DialogTitle>New Account</DialogTitle>
+//         <DialogContent>
+//           <DialogContentText>
+//             New account successfully created.
+//           </DialogContentText>
+//         </DialogContent>
+//         <DialogActions>
+//           <Button
+//             color="primary"
+//             variant="outlined"
+//             component={RouterLink}
+//             to={"/signin"}
+//           >
+//             Sign In
+//           </Button>
+//         </DialogActions>
+//       </Dialog>
